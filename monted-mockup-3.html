@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Monted — sourced above 3,200m</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,100..900&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --white:#FFFFFF;
+    --pale:#EAF4FA;
+    --sky:#BFE0EE;
+    --mid:#6FA6C4;
+    --ink:#12303E;
+    --line:#D3E7F0;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--white);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.6;overflow-x:hidden;}
+  .fr{font-family:'Fraunces',serif;font-weight:340;font-variation-settings:'opsz' 100;}
+
+  /* ------ progress: altitude meter ------ */
+  .alt-meter{position:fixed;right:14px;top:50%;transform:translateY(-50%);z-index:60;display:flex;flex-direction:column;align-items:center;gap:8px;mix-blend-mode:multiply;}
+  .alt-track{width:2px;height:180px;background:var(--line);position:relative;border-radius:2px;}
+  .alt-fill{position:absolute;bottom:0;left:0;width:100%;background:var(--mid);border-radius:2px;height:0%;}
+  .alt-num{font-family:'Fraunces',serif;font-size:12px;color:var(--mid);writing-mode:vertical-rl;letter-spacing:0.08em;}
+
+  nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:18px clamp(20px,4vw,44px);transition:background .3s,box-shadow .3s;}
+  nav.scrolled{background:rgba(255,255,255,0.92);backdrop-filter:blur(10px);box-shadow:0 1px 0 var(--line);}
+  nav.scrolled .logo,nav.scrolled .nav-cta{color:var(--ink);border-color:var(--ink);}
+  .logo{font-family:'Fraunces',serif;font-size:20px;color:var(--white);transition:color .3s;}
+  .nav-cta{color:var(--white);border:1px solid rgba(255,255,255,0.6);padding:8px 18px;border-radius:999px;font-size:12px;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;transition:all .3s;}
+  .nav-cta:hover{background:var(--ink);color:var(--white);border-color:var(--ink);}
+
+  /* ------ hero ------ */
+  .hero{position:relative;min-height:100svh;background:linear-gradient(165deg,#0D2833 0%,#12303E 50%,#1E4A5E 100%);color:var(--white);display:flex;align-items:flex-end;overflow:hidden;}
+  .contour{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
+  .contour path{fill:none;stroke:var(--sky);stroke-width:1;stroke-dasharray:2000;stroke-dashoffset:2000;animation:draw 3.2s ease-out forwards;}
+  .contour path:nth-child(2){animation-delay:.25s;}
+  .contour path:nth-child(3){animation-delay:.5s;}
+  .contour path:nth-child(4){animation-delay:.75s;}
+  .contour path:nth-child(5){animation-delay:1s;}
+  @keyframes draw{to{stroke-dashoffset:0;}}
+  .video-tag{position:absolute;top:76px;right:clamp(20px,4vw,44px);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--sky);border:1px solid rgba(191,224,238,0.4);padding:6px 12px;border-radius:999px;}
+  .play{position:absolute;top:44%;left:50%;transform:translate(-50%,-50%);width:clamp(56px,8vw,76px);height:clamp(56px,8vw,76px);border-radius:50%;border:1px solid rgba(255,255,255,0.5);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .3s,background .3s;}
+  .play:hover{transform:translate(-50%,-50%) scale(1.08);background:rgba(255,255,255,0.08);}
+  .play::after{content:'';border-left:16px solid var(--white);border-top:10px solid transparent;border-bottom:10px solid transparent;margin-left:5px;}
+  .hero-copy{position:relative;width:100%;max-width:1120px;margin:0 auto;padding:0 clamp(20px,4vw,44px) clamp(40px,7vh,72px);}
+  .altitude-line{font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--sky);margin-bottom:14px;}
+  .hero h1{font-family:'Fraunces',serif;font-size:clamp(40px,8.5vw,84px);line-height:1.02;font-weight:280;font-variation-settings:'opsz' 144;max-width:14ch;margin-bottom:26px;letter-spacing:-0.015em;}
+  .hero h1 .morph{display:inline-block;}
+  .hero-actions{display:flex;gap:12px;flex-wrap:wrap;}
+  .btn-primary{display:inline-block;background:var(--white);color:var(--ink);padding:15px 30px;border-radius:999px;font-size:14px;text-decoration:none;transition:transform .2s;}
+  .btn-primary:hover{transform:translateY(-2px);}
+  .btn-ghost{display:inline-block;color:var(--white);border:1px solid rgba(255,255,255,0.4);padding:14px 26px;border-radius:999px;font-size:14px;text-decoration:none;}
+  .scroll-hint{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.5);animation:bob 2.2s ease-in-out infinite;}
+  @keyframes bob{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(6px);}}
+
+  .demand{background:var(--sky);color:var(--ink);text-align:center;padding:11px 16px;font-size:clamp(12px,1.6vw,13px);letter-spacing:0.03em;}
+  .demand strong{font-family:'Fraunces',serif;}
+
+  /* ------ scroll-morphing statement ------ */
+  .statement{padding:clamp(90px,16vh,160px) clamp(20px,4vw,44px);text-align:center;}
+  .statement p{font-family:'Fraunces',serif;font-size:clamp(30px,5.4vw,58px);line-height:1.18;max-width:20ch;margin:0 auto;font-weight:200;font-variation-settings:'opsz' 9;letter-spacing:0;transition:none;}
+  .statement .sub{font-family:'Inter',sans-serif;font-size:13px;color:var(--mid);letter-spacing:0.14em;text-transform:uppercase;margin-top:28px;font-variation-settings:normal;font-weight:400;}
+
+  /* ------ products ------ */
+  .section{padding:clamp(70px,12vh,110px) 0;}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 clamp(20px,4vw,44px);}
+  .eyebrow{font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--mid);margin-bottom:14px;text-align:center;}
+  .section-head{text-align:center;max-width:620px;margin:0 auto clamp(36px,6vh,56px);}
+  .section-head h2{font-family:'Fraunces',serif;font-size:clamp(26px,4vw,38px);font-weight:340;line-height:1.15;}
+
+  .products{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:clamp(16px,3vw,28px);}
+  .product{border-radius:22px;padding:clamp(26px,4vw,40px);position:relative;overflow:hidden;background:var(--pale);opacity:0;transform:translateY(36px);transition:opacity .7s ease,transform .7s ease,box-shadow .3s;}
+  .product.vis{opacity:1;transform:translateY(0);}
+  .product:hover{box-shadow:0 24px 48px rgba(18,48,62,0.12);}
+  .product.premium{background:var(--ink);color:var(--white);transition-delay:.15s;}
+  .product-num{font-family:'Fraunces',serif;font-size:12px;letter-spacing:0.1em;color:var(--mid);margin-bottom:20px;}
+  .product.premium .product-num{color:var(--sky);}
+  .bottle-stage{height:190px;display:flex;align-items:flex-end;justify-content:center;margin-bottom:22px;perspective:600px;}
+  .bottle{width:62px;height:150px;background:var(--white);border-radius:10px 10px 22px 22px;position:relative;box-shadow:0 18px 32px rgba(18,48,62,0.16);transition:transform .5s ease;}
+  .product:hover .bottle{transform:rotateY(14deg) translateY(-8px);}
+  .bottle::before{content:'';position:absolute;top:-16px;left:50%;transform:translateX(-50%);width:26px;height:20px;background:var(--mid);border-radius:5px 5px 0 0;}
+  .bottle::after{content:'MONTED';font-family:'Fraunces',serif;font-size:8px;letter-spacing:0.1em;color:var(--mid);position:absolute;top:52px;left:50%;transform:translateX(-50%);}
+  .product.premium .bottle{background:var(--pale);}
+  .product h3{font-family:'Fraunces',serif;font-size:clamp(21px,2.6vw,25px);font-weight:400;margin-bottom:6px;}
+  .tag{font-size:13px;color:var(--mid);margin-bottom:18px;}
+  .product.premium .tag{color:var(--sky);}
+  .actives{list-style:none;font-size:13px;margin-bottom:24px;color:#42606F;}
+  .product.premium .actives{color:#C2D9E4;}
+  .actives li{padding:7px 0;border-top:1px solid var(--line);}
+  .product.premium .actives li{border-top:1px solid rgba(255,255,255,0.14);}
+  .price-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+  .price{font-family:'Fraunces',serif;font-size:22px;}
+  .btn-small{background:var(--ink);color:var(--white);padding:12px 24px;border-radius:999px;font-size:13px;text-decoration:none;transition:transform .2s;}
+  .btn-small:hover{transform:translateY(-2px);}
+  .product.premium .btn-small{background:var(--white);color:var(--ink);}
+
+  /* ------ ritual: sticky steps ------ */
+  .ritual{background:var(--pale);}
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:clamp(14px,2.5vw,24px);counter-reset:step;}
+  .step{background:var(--white);border-radius:18px;padding:30px 24px;opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease;}
+  .step.vis{opacity:1;transform:translateY(0);}
+  .step:nth-child(2){transition-delay:.12s;}
+  .step:nth-child(3){transition-delay:.24s;}
+  .step .num{font-family:'Fraunces',serif;font-size:26px;color:var(--mid);margin-bottom:12px;}
+  .step h3{font-family:'Fraunces',serif;font-size:17px;font-weight:400;margin-bottom:8px;}
+  .step p{font-size:14px;color:#42606F;}
+
+  /* ------ cta ------ */
+  .cta{text-align:center;padding:clamp(80px,14vh,130px) clamp(20px,4vw,44px);}
+  .cta h2{font-family:'Fraunces',serif;font-size:clamp(30px,5vw,44px);font-weight:300;margin-bottom:24px;}
+  .cta .btn-primary{background:var(--ink);color:var(--white);}
+
+  footer{border-top:1px solid var(--line);padding:26px 16px;text-align:center;font-size:12px;color:var(--mid);letter-spacing:0.04em;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important;transition:none !important;}
+    .product,.step{opacity:1;transform:none;}
+    .contour path{stroke-dashoffset:0;}
+  }
+  @media(max-width:640px){
+    .alt-meter{display:none;}
+    .video-tag{top:66px;font-size:9px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="alt-meter" aria-hidden="true">
+  <div class="alt-num" id="altNum">0 m</div>
+  <div class="alt-track"><div class="alt-fill" id="altFill"></div></div>
+</div>
+
+<nav id="nav">
+  <div class="logo">Monted</div>
+  <a href="#products" class="nav-cta">Shop</a>
+</nav>
+
+<section class="hero">
+  <svg class="contour" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <path d="M-50,640 C200,570 420,690 640,610 C860,530 1020,650 1250,570" opacity="0.35"/>
+    <path d="M-50,560 C200,490 420,610 640,530 C860,450 1020,570 1250,490" opacity="0.3"/>
+    <path d="M-50,480 C200,410 420,530 640,450 C860,370 1020,490 1250,410" opacity="0.25"/>
+    <path d="M-50,400 C200,330 420,450 640,370 C860,290 1020,410 1250,330" opacity="0.2"/>
+    <path d="M-50,320 C200,250 420,370 640,290 C860,210 1020,330 1250,250" opacity="0.15"/>
+  </svg>
+  <div class="video-tag">Video — drop AI cut here</div>
+  <div class="play" aria-hidden="true"></div>
+  <div class="hero-copy">
+    <div class="altitude-line">Sourced above 3,200m</div>
+    <h1><span class="morph" id="morphTitle">Two formulas. One source of water.</span></h1>
+    <div class="hero-actions">
+      <a href="#products" class="btn-primary">Shop both formulas</a>
+      <a href="#" class="btn-ghost">Watch the story</a>
+    </div>
+  </div>
+  <div class="scroll-hint">Scroll to descend</div>
+</section>
+
+<div class="demand">Batch 004 is <strong>62% claimed</strong> — next restock not guaranteed on time</div>
+
+<section class="statement">
+  <p class="morph-scroll" id="statement">Skincare kept adding steps. We removed them until only water and intent remained.</p>
+  <div class="sub">Why we only make two things</div>
+</section>
+
+<section class="section" id="products">
+  <div class="wrap">
+    <div class="eyebrow">The debut</div>
+    <div class="section-head"><h2>Start where your skin is. Not where a routine says it should be.</h2></div>
+    <div class="products">
+      <div class="product" id="p1">
+        <div class="product-num">01 — The Serum</div>
+        <div class="bottle-stage"><div class="bottle"></div></div>
+        <h3>Peptide Recovery</h3>
+        <div class="tag">Daily use, all skin types</div>
+        <ul class="actives">
+          <li>Copper + peptide complex</li>
+          <li>Ceramides + hyaluronic acid</li>
+          <li>Centella asiatica</li>
+        </ul>
+        <div class="price-row"><span class="price">$48</span><a href="#" class="btn-small">Add to cart</a></div>
+      </div>
+      <div class="product premium" id="p2">
+        <div class="product-num">02 — The Serum, Retinol</div>
+        <div class="bottle-stage"><div class="bottle"></div></div>
+        <h3>Peptide + Retinol</h3>
+        <div class="tag">Night use, once skin is ready</div>
+        <ul class="actives">
+          <li>Everything in 01</li>
+          <li>Encapsulated retinol</li>
+          <li>Slow-release, low-irritation base</li>
+        </ul>
+        <div class="price-row"><span class="price">$64</span><a href="#" class="btn-small">Add to cart</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section ritual">
+  <div class="wrap">
+    <div class="eyebrow">The ritual</div>
+    <div class="section-head"><h2>Three steps. Either bottle.</h2></div>
+    <div class="steps">
+      <div class="step"><div class="num">01</div><h3>Cleanse</h3><p>Damp skin, morning or night — nothing else needed underneath.</p></div>
+      <div class="step"><div class="num">02</div><h3>Press</h3><p>Two pumps, palms warm, press into skin rather than rubbing.</p></div>
+      <div class="step"><div class="num">03</div><h3>Seal</h3><p>Let it sit sixty seconds before anything goes on top.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="eyebrow">Two formulas, one debut</div>
+  <h2>Batch 004 ships soon.</h2>
+  <a href="#products" class="btn-primary">Reserve yours</a>
+</section>
+
+<footer>© Monted — sourced above 3,200m.</footer>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var nav = document.getElementById('nav');
+  var altFill = document.getElementById('altFill');
+  var altNum = document.getElementById('altNum');
+  var statement = document.getElementById('statement');
+  var morphTitle = document.getElementById('morphTitle');
+  var maxAlt = 3200;
+  var ticking = false;
+
+  function onScroll(){
+    if(ticking) return;
+    ticking = true;
+    requestAnimationFrame(function(){
+      var y = window.scrollY || window.pageYOffset;
+      var docH = document.documentElement.scrollHeight - window.innerHeight;
+      var prog = docH > 0 ? Math.min(1, y / docH) : 0;
+
+      nav.classList.toggle('scrolled', y > window.innerHeight * 0.7);
+
+      if(altFill){
+        altFill.style.height = (prog * 100).toFixed(1) + '%';
+        altNum.textContent = Math.round(prog * maxAlt).toLocaleString() + ' m';
+      }
+
+      if(!reduced && morphTitle){
+        var heroProg = Math.min(1, y / (window.innerHeight * 0.9));
+        var w = 280 + heroProg * 320;
+        morphTitle.style.fontVariationSettings = "'opsz' 144, 'wght' " + Math.round(w);
+      }
+
+      if(!reduced && statement){
+        var r = statement.getBoundingClientRect();
+        var vh = window.innerHeight;
+        var t = 1 - Math.min(1, Math.max(0, (r.top + r.height * 0.5 - vh * 0.2) / (vh * 0.8)));
+        var wght = 200 + t * 380;
+        var opsz = 9 + t * 135;
+        var ls = (0.02 - t * 0.05).toFixed(3);
+        statement.style.fontVariationSettings = "'opsz' " + opsz.toFixed(0) + ", 'wght' " + Math.round(wght);
+        statement.style.letterSpacing = ls + 'em';
+      }
+      ticking = false;
+    });
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ e.target.classList.add('vis'); io.unobserve(e.target); }
+    });
+  }, {threshold: 0.18});
+  document.querySelectorAll('.product, .step').forEach(function(el){
+    if(reduced){ el.classList.add('vis'); } else { io.observe(el); }
+  });
+})();
+</script>
+
+</body>
+</html>
