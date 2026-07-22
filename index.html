@@ -36,18 +36,18 @@
 
   /* ------ hero ------ */
   .hero{position:relative;min-height:100svh;background:linear-gradient(165deg,#0D2833 0%,#12303E 50%,#1E4A5E 100%);color:var(--white);display:flex;align-items:flex-end;overflow:hidden;}
-  .contour{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
+  .hero-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;}
+  .hero-scrim{position:absolute;inset:0;background:linear-gradient(165deg,rgba(13,40,51,0.55) 0%,rgba(18,48,62,0.5) 50%,rgba(30,74,94,0.55) 100%);z-index:1;}
+  .contour{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;}
   .contour path{fill:none;stroke:var(--sky);stroke-width:1;stroke-dasharray:2000;stroke-dashoffset:2000;animation:draw 3.2s ease-out forwards;}
   .contour path:nth-child(2){animation-delay:.25s;}
   .contour path:nth-child(3){animation-delay:.5s;}
   .contour path:nth-child(4){animation-delay:.75s;}
   .contour path:nth-child(5){animation-delay:1s;}
   @keyframes draw{to{stroke-dashoffset:0;}}
-  .video-tag{position:absolute;top:76px;right:clamp(20px,4vw,44px);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--sky);border:1px solid rgba(191,224,238,0.4);padding:6px 12px;border-radius:999px;}
-  .play{position:absolute;top:44%;left:50%;transform:translate(-50%,-50%);width:clamp(56px,8vw,76px);height:clamp(56px,8vw,76px);border-radius:50%;border:1px solid rgba(255,255,255,0.5);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .3s,background .3s;}
-  .play:hover{transform:translate(-50%,-50%) scale(1.08);background:rgba(255,255,255,0.08);}
-  .play::after{content:'';border-left:16px solid var(--white);border-top:10px solid transparent;border-bottom:10px solid transparent;margin-left:5px;}
-  .hero-copy{position:relative;width:100%;max-width:1120px;margin:0 auto;padding:0 clamp(20px,4vw,44px) clamp(40px,7vh,72px);}
+  .sound-toggle{position:absolute;top:76px;right:clamp(20px,4vw,44px);z-index:3;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--sky);border:1px solid rgba(191,224,238,0.4);padding:6px 14px;border-radius:999px;background:transparent;cursor:pointer;font-family:inherit;transition:background .3s;}
+  .sound-toggle:hover{background:rgba(255,255,255,0.08);}
+  .hero-copy{position:relative;z-index:3;width:100%;max-width:1120px;margin:0 auto;padding:0 clamp(20px,4vw,44px) clamp(40px,7vh,72px);}
   .altitude-line{font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--sky);margin-bottom:14px;}
   .hero h1{font-family:'Fraunces',serif;font-size:clamp(40px,8.5vw,84px);line-height:1.02;font-weight:280;font-variation-settings:'opsz' 144;max-width:14ch;margin-bottom:26px;letter-spacing:-0.015em;}
   .hero h1 .morph{display:inline-block;}
@@ -55,7 +55,7 @@
   .btn-primary{display:inline-block;background:var(--white);color:var(--ink);padding:15px 30px;border-radius:999px;font-size:14px;text-decoration:none;transition:transform .2s;}
   .btn-primary:hover{transform:translateY(-2px);}
   .btn-ghost{display:inline-block;color:var(--white);border:1px solid rgba(255,255,255,0.4);padding:14px 26px;border-radius:999px;font-size:14px;text-decoration:none;}
-  .scroll-hint{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.5);animation:bob 2.2s ease-in-out infinite;}
+  .scroll-hint{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);z-index:3;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.5);animation:bob 2.2s ease-in-out infinite;}
   @keyframes bob{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(6px);}}
 
   .demand{background:var(--sky);color:var(--ink);text-align:center;padding:11px 16px;font-size:clamp(12px,1.6vw,13px);letter-spacing:0.03em;}
@@ -141,6 +141,10 @@
 </nav>
 
 <section class="hero">
+  <video class="hero-video" id="heroVideo" autoplay muted loop playsinline>
+    <source src="hero.mp4" type="video/mp4">
+  </video>
+  <div class="hero-scrim" aria-hidden="true"></div>
   <svg class="contour" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
     <path d="M-50,640 C200,570 420,690 640,610 C860,530 1020,650 1250,570" opacity="0.35"/>
     <path d="M-50,560 C200,490 420,610 640,530 C860,450 1020,570 1250,490" opacity="0.3"/>
@@ -148,8 +152,7 @@
     <path d="M-50,400 C200,330 420,450 640,370 C860,290 1020,410 1250,330" opacity="0.2"/>
     <path d="M-50,320 C200,250 420,370 640,290 C860,210 1020,330 1250,250" opacity="0.15"/>
   </svg>
-  <div class="video-tag">Video — drop AI cut here</div>
-  <div class="play" aria-hidden="true"></div>
+  <button class="sound-toggle" id="soundToggle" type="button" aria-pressed="false">Sound off</button>
   <div class="hero-copy">
     <div class="altitude-line">Sourced above 3,200m</div>
     <h1><span class="morph" id="morphTitle">Two formulas. One source of water.</span></h1>
@@ -224,6 +227,16 @@
 <script>
 (function(){
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var heroVideo = document.getElementById('heroVideo');
+  var soundToggle = document.getElementById('soundToggle');
+  if(heroVideo && reduced){ heroVideo.pause(); }
+  if(soundToggle && heroVideo){
+    soundToggle.addEventListener('click', function(){
+      heroVideo.muted = !heroVideo.muted;
+      soundToggle.textContent = heroVideo.muted ? 'Sound off' : 'Sound on';
+      soundToggle.setAttribute('aria-pressed', String(!heroVideo.muted));
+    });
+  }
   var nav = document.getElementById('nav');
   var altFill = document.getElementById('altFill');
   var altNum = document.getElementById('altNum');
